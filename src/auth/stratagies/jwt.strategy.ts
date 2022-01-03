@@ -15,12 +15,12 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: payloadValidate) {
-    const email = await this.usersService.getUserByEmail(payload.email);
-    const id = await this.usersService.getUserById(payload.id);
+  async validate({ id, email }: payloadValidate) {
+    const isEmail = await this.usersService.getUserByEmail(email);
+    const isId = await this.usersService.getUserById(id);
 
-    if (email && id) {
-      return { id: payload.id, email: payload.email };
+    if (isEmail && isId) {
+      return { id, email };
     }
 
     throw new UnauthorizedException('you don`t have permission to this page');

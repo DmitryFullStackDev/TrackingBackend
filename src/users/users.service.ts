@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcryptjs';
 import { CreateUsersDto } from './dto/createUser.dto';
@@ -9,6 +9,12 @@ export class UsersService {
   constructor(@InjectModel(User) private userRepository: typeof User) {}
 
   async createUser(dto: CreateUsersDto) {
+    const isUser = this.getUserByEmail(dto.email);
+
+    if (isUser) {
+      throw new ForbiddenException('this email is already exist');
+    }
+
     const hashPassword = await bcrypt.hash(dto.password, 5);
     const user = await this.userRepository.create({
       ...dto,
