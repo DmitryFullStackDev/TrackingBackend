@@ -14,4 +14,9 @@ export class UsersController {
   getSpecificUser(@Param('email') email: string) {
     return this.usersService.getUserByEmail(email);
   }
+
+  @Get()
+  sendMail(): any {
+    return this.usersService.example();
+  }
 }

@@ -1,3 +1,4 @@
+import { MailerService } from '@nestjs-modules/mailer';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import * as bcrypt from 'bcryptjs';
@@ -6,7 +7,27 @@ import { User } from './users.model';
 
 @Injectable()
 export class UsersService {
-  constructor(@InjectModel(User) private userRepository: typeof User) {}
+  constructor(
+    @InjectModel(User) private userRepository: typeof User,
+    private readonly mailerService: MailerService,
+  ) {}
+
+  public example(): void {
+    this.mailerService
+      .sendMail({
+        to: 'user@gmail.com', // List of receivers email address
+        from: 'user@outlook.com', // Senders email address
+        subject: 'Testing Nest MailerModule ✔', // Subject line
+        text: 'welcome', // plaintext body
+        html: '<b>welcome</b>', // HTML body content
+      })
+      .then((success) => {
+        console.log(success);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 
   async createUser(dto: CreateUsersDto) {
     const isUser = this.getUserByEmail(dto.email);
