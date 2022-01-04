@@ -15,11 +15,10 @@ export class UsersService {
   public example(): void {
     this.mailerService
       .sendMail({
-        to: 'user@gmail.com', // List of receivers email address
-        from: 'user@outlook.com', // Senders email address
+        to: 'qwepoint@yandex.by', // List of receivers email address
         subject: 'Testing Nest MailerModule ✔', // Subject line
-        text: 'welcome', // plaintext body
-        html: '<b>welcome</b>', // HTML body content
+        text: 'welcавыome', // plaintext body
+        html: '<b>welаcome</b>', // HTML body content
       })
       .then((success) => {
         console.log(success);
