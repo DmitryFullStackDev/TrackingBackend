@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
+import { TokenModule } from './auth/token/token.module';
 import { MailModule } from './mail/mail.module';
 import { UsersModule } from './users/users.module';
 
@@ -39,6 +40,7 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     AuthModule,
     MailModule,
+    TokenModule,
   ],
   controllers: [AppController],
   providers: [],

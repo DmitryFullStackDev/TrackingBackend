@@ -8,4 +8,7 @@ export class CreateUsersDto {
   @IsString({ message: 'password should be string' })
   @Length(4, 15, { message: 'password should be from 4 to 15 symbols' })
   readonly password: string;
+
+  status: 'pending' | 'blocked' | 'active' = 'pending';
+  role = 'user';
 }

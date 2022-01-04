@@ -3,6 +3,8 @@ import { Column, DataType, Model, Table } from 'sequelize-typescript';
 interface UserCreationAttrs {
   email: string;
   password: string;
+  status: string;
+  role: string;
 }
 
 @Table({
@@ -29,4 +31,14 @@ export class User extends Model<User, UserCreationAttrs> {
     allowNull: false,
   })
   password: string;
+
+  @Column({
+    type: DataType.STRING,
+  })
+  status: 'pending' | 'blocked' | 'active' = 'pending';
+
+  @Column({
+    type: DataType.STRING,
+  })
+  role = 'user';
 }

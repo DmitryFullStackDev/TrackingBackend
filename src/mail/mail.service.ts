@@ -6,7 +6,7 @@ import { mailType } from './mail.type';
 export class MailService {
   constructor(private readonly mailerService: MailerService) {}
 
-  async example(mail: mailType) {
+  async send(mail: mailType) {
     try {
       const success = await this.mailerService.sendMail(mail);
 
