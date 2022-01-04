@@ -37,4 +37,17 @@ export class TokenService {
 
     throw new ForbiddenException('this token is not exist');
   }
+
+  async deleteAll(userId: number) {
+    const isToken = await this.tokenRepository.findAll({
+      where: { userId },
+    });
+
+    if (isToken) {
+      await isToken.forEach((item) => item.destroy());
+      return;
+    }
+
+    throw new ForbiddenException('this token is not exist');
+  }
 }

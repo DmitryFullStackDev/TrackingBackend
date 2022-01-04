@@ -10,6 +10,8 @@ import * as bcrypt from 'bcryptjs';
 import { MailService } from 'src/mail/mail.service';
 import { CreateUsersDto } from 'src/users/dto/createUser.dto';
 import { UsersService } from '../users/users.service';
+import { ChangePasswordDto } from './dto/changePassword.dto';
+import { ForgotPasswordDto } from './dto/forgotPassword.dto';
 import { TokenService } from './token/token.service';
 
 type sendConfirmType = { email: string; id: number; status: string };
@@ -79,7 +81,7 @@ export class AuthService {
     user: sendConfirmType,
     withStatusCheck = true,
   ): Promise<string> {
-    if (withStatusCheck && user.status !== 'active') {
+    if (withStatusCheck && user.status === 'active') {
       throw new MethodNotAllowedException();
     }
 
@@ -107,8 +109,7 @@ export class AuthService {
     const user = await this.usersService.getUserById(data.id);
 
     await this.tokenService.deleteToken(token, data.id);
-    console.log(data);
-    console.log(user);
+
     if (user && user.status === 'pending') {
       user.status = 'active';
       user.save();
@@ -125,5 +126,34 @@ export class AuthService {
       return data;
     }
     throw new UnauthorizedException();
+  }
+
+  async forgotPassword(forgotPasswordDto: ForgotPasswordDto): Promise<void> {
+    const user = await this.usersService.getUserByEmail(
+      forgotPasswordDto.email,
+    );
+    if (!user) {
+      throw new BadRequestException('Invalid email');
+    }
+
+    const token = await this.signUser(user);
+    const forgotLink = `${this.clientAppUrl}/auth/forgotPassword?token=${token}`;
+
+    await this.mailService.send({
+      to: user.email,
+      subject: 'Forgot Password',
+      html: `
+            <p>Please use this <a href="${forgotLink}">link</a> to reset your password.</p>
+        `,
+    });
+  }
+
+  async changePassword(userId: number, changePasswordDto: ChangePasswordDto) {
+    const password = await this.usersService.hashPassword(
+      changePasswordDto.password,
+    );
+
+    await this.usersService.update(userId, password);
+    await this.tokenService.deleteAll(userId);
   }
 }

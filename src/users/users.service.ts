@@ -7,6 +7,8 @@ import { User } from './users.model';
 
 @Injectable()
 export class UsersService {
+  private readonly saltRounds = 10;
+
   constructor(
     @InjectModel(User) private userRepository: typeof User,
     private mailService: MailService,
@@ -30,7 +32,7 @@ export class UsersService {
       throw new ForbiddenException('this email is already exist');
     }
 
-    const hashPassword = await bcrypt.hash(dto.password, 5);
+    const hashPassword = await this.hashPassword(dto.password);
     const user = await this.userRepository.create({
       ...dto,
       password: hashPassword,
@@ -47,6 +49,7 @@ export class UsersService {
 
   async getUserByEmail(email: string) {
     const user = await this.userRepository.findOne({
+      raw: true,
       where: { email: email },
     });
 
@@ -55,8 +58,26 @@ export class UsersService {
 
   async getUserById(id: number) {
     const user = await this.userRepository.findOne({
+      raw: true,
       where: { id },
     });
+
+    return user;
+  }
+
+  async hashPassword(password: string): Promise<string> {
+    const salt = await bcrypt.genSalt(this.saltRounds);
+    return await bcrypt.hash(password, salt);
+  }
+
+  async update(id: number, password: string) {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+
+    user.password = password;
+
+    user.save();
 
     return user;
   }
