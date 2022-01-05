@@ -108,11 +108,10 @@ export class AuthService {
     const data = await this.verifyToken(token);
     const user = await this.usersService.getUserById(data.id);
 
-    await this.tokenService.deleteToken(token, data.id);
+    /*     await this.tokenService.deleteToken(token, data.id); */
 
     if (user && user.status === 'pending') {
-      user.status = 'active';
-      user.save();
+      this.usersService.updateStatus(data.id, 'active');
       return;
     }
     throw new BadRequestException('Confirmation error');

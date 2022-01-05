@@ -81,4 +81,16 @@ export class UsersService {
 
     return user;
   }
+
+  async updateStatus(id: number, status: 'pending' | 'blocked' | 'active') {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+
+    user.status = status;
+
+    user.save();
+
+    return user;
+  }
 }
