@@ -27,7 +27,7 @@ export class Token extends Model<Token, TokenCreationAttrs> {
 
   @Column({
     type: DataType.INTEGER,
-    unique: true,
+    unique: false,
     allowNull: false,
   })
   userId: number;

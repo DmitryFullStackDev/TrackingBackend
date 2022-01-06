@@ -33,6 +33,10 @@ export class AuthService {
   async validateUser(email: string, pass: string) {
     const user = await this.usersService.getUserByEmail(email);
 
+    if (!user) {
+      throw new BadRequestException('email or password is not correct');
+    }
+
     const passwordEquals = await bcrypt.compare(pass, user.password);
 
     if (user && passwordEquals) {
@@ -42,7 +46,7 @@ export class AuthService {
     return null;
   }
 
-  async singIn(user: { email: string; id: number }) {
+  async login(user: { email: string; id: number }) {
     const payload = { email: user.email, id: user.id };
 
     return {
@@ -51,7 +55,7 @@ export class AuthService {
     };
   }
 
-  async signUp(dto: CreateUsersDto) {
+  async registration(dto: CreateUsersDto) {
     const { email, id, status } = await this.usersService.createUser(dto);
     await this.sendConfirmation({ email, id, status });
     const payload = { email, id };
@@ -81,7 +85,7 @@ export class AuthService {
     user: sendConfirmType,
     withStatusCheck = true,
   ): Promise<string> {
-    if (withStatusCheck && user.status === 'active') {
+    if (withStatusCheck && user.status !== 'active') {
       throw new MethodNotAllowedException();
     }
 
@@ -131,6 +135,7 @@ export class AuthService {
     const user = await this.usersService.getUserByEmail(
       forgotPasswordDto.email,
     );
+
     if (!user) {
       throw new BadRequestException('Invalid email');
     }

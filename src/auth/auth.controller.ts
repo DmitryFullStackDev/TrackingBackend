@@ -21,15 +21,15 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @UseGuards(LocalAuthGuard)
-  @Post('singIn')
+  @Post('login')
   async login(@Request() req) {
-    return this.authService.singIn(req.user);
+    return this.authService.login(req.user);
   }
 
   @UsePipes(ValidationPipe)
-  @Post('singUp')
+  @Post('registration')
   async registration(@Body() dto: CreateUsersDto) {
-    return this.authService.signUp(dto);
+    return this.authService.registration(dto);
   }
 
   @UsePipes(ValidationPipe)
